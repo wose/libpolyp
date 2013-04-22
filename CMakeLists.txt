@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.10)
 project(libpolyp)
 
-exec_program("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "describe --tags" OUTPUT_VARIABLE VERSION )
+exec_program("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "describe --long" OUTPUT_VARIABLE VERSION )
 set( GIT_VERSION ${VERSION} )
 configure_file( ${CMAKE_SOURCE_DIR}/src/config.h.cmake ${CMAKE_SOURCE_DIR}/src/config.h )
 
