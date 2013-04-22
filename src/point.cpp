@@ -16,12 +16,12 @@ point::~point()
 {
 }
 
-void set_x(double x)
+void point::set_x(double x)
 {
   _x= x;
 }
 
-void set_y(double y)
+void point::set_y(double y)
 {
   _y= y;
 }

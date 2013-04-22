@@ -2,21 +2,20 @@
 #define _POLYP_POINT_H_
 
 class point {
-
-public:
+ public:
   point();
   point(double x, double y);
   ~point();
 
-private:
+ private:
   double _x;
   double _y;
 
-public:
-  double get_x() const {return x;};
+ public:
+  double get_x() const {return _x;};
   void set_x(double x);
 
-  double get_y() const {return y;};
+  double get_y() const {return _y;};
   void set_y(double y);
 };
 
