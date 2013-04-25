@@ -1,5 +1,4 @@
 set(SRC
-  point.cpp
   polygon.cpp
 )
 
