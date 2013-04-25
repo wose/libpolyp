@@ -1,4 +1,5 @@
-#include "polygon.h"
+#include "libpolyp/vertex.h"
+#include "libpolyp/polygon.h"
 #include <math.h>
 #include <vector>
 
@@ -6,57 +7,66 @@ polygon::polygon()
 {
 }
 
+polygon::polygon(std::initializer_list<vertex> il, bool close_polygon)
+{
+  for(auto v : il)
+    _vertices.push_back(v);
+  if(close_polygon)
+    close();
+}
+
 polygon::~polygon()
 {
 }
 
-void polygon::add(const double x, const double y)
+void polygon::push_back(const double x, const double y)
 {
-  _points.push_back({x, y});
+  _vertices.push_back({x, y});
 }
 
-void polygon::add(const point& p)
+void polygon::push_back(const vertex& p)
 {
-  _points.push_back(p);
+  _vertices.push_back(p);
 }
 
-unsigned int polygon::get_point_count() const
+unsigned int polygon::size() const
 {
-  return _points.size();
+  return _is_closed ? _vertices.size() - 1 : _vertices.size();
 }
 
-double polygon::get_perimeter() const
+std::vector<vertex>::iterator polygon::begin()
+{
+  return _vertices.begin();
+}
+
+std::vector<vertex>::iterator polygon::end()
+{
+  return _vertices.end();
+}
+
+double polygon::perimeter() const
 {
   double perimeter = 0.0;
 
-  for (auto ci = _points.cbegin(); ci < _points.cend() - 1; ++ci)
+  for (auto ci = _vertices.cbegin(); ci < _vertices.cend() - 1; ++ci)
     {
       auto ti = ci + 1;
-      perimeter += sqrt(pow(ci->get_x() - ti->get_x(), 2) +
-                        pow(ci->get_y() - ti->get_y(), 2) );
+      perimeter += sqrt(pow(ci->x - ti->x, 2) +
+                        pow(ci->y - ti->y, 2) );
     }
-  auto first = _points.cbegin();
-  auto last = _points.cend() -1;
-
-  perimeter += sqrt(pow(first->get_x() - last->get_x(), 2) +
-                   pow(first->get_y() - last->get_y(), 2) );
 
   return perimeter;
 }
 
-double polygon::get_area() const
+double polygon::area() const
 {
   double area = 0.0;
-  //$area += $_[0][0]*$_[1][1] - $_[0][1]*$_[1][0];
-  for (auto ci = _points.cbegin(); ci < _points.cend() - 1; ++ci)
+
+  for (auto ci = _vertices.cbegin(); ci < _vertices.cend() - 1; ++ci)
     {
       auto ti = ci + 1;
-      area += ci->get_x() * ti->get_y() - ci->get_y() * ti->get_x();
+      area += ci->x * ti->y - ci->y * ti->x;
     }
-  auto first = _points.cbegin();
-  auto last = _points.cend() -1;
-
-  area += last->get_x() * first->get_y() - last->get_y() * first->get_x();
 
   return fabs(area) / 2;
 }
@@ -65,7 +75,7 @@ void polygon::close()
 {
   if(!_is_closed)
     {
-      _points.push_back(*_points.cbegin());
+      _vertices.push_back(*_vertices.cbegin());
       _is_closed = true;
     }
 }

@@ -1,5 +1,5 @@
 set(TEST_SRC
-  point.cpp
+  vertex.cpp
   polygon.cpp
   )
 
@@ -10,4 +10,5 @@ foreach(TEST_FILE ${TEST_SRC})
   target_link_libraries(${TEST_EXE} libpolyp ${UNITTEST_LIBRARY})
   add_test(${TEST_NAME} ${TEST_EXE})
 endforeach()
+
 

@@ -1,73 +1,87 @@
 #include <unittest/unittest.hpp>
-#include "point.h"
-#include "polygon.h"
+#include "polyp.h"
 
-int main () {
+int main ()
+{
   using namespace unittest;
 
-  test("polygon building") = {
-    task("constructors") = []{
-      polygon p1;
-      self.assert_equal(p1.get_point_count(), 0);
+  polygon rectangle = {{-2, -1}, {-2, 1}, {2, 1}, {2, -1}};
+  polygon square    = {{-1, -1}, {-1, 1}, {1, 1}, {1, -1}};
+  polygon hexagon   = {{0, -2}, {sqrt(3), -1}, {sqrt(3), 1}, {0, 2},
+                       {-sqrt(3), 1}, {-sqrt(3), -1}};
+
+
+  test("polygon") = {
+    task("default") = []{
+      polygon p;
+      self.assert_equal(p.size(), 0);
     },
-    task("add_points1") = []{
-      polygon p1;
-      p1.add(-1.0, -1.0);
-      self.assert_equal(p1.get_point_count(), 1);
-      p1.add(-1.0, 1.0);
-      self.assert_equal(p1.get_point_count(), 2);
+    task("initializer list do not close") = []{
+      polygon p({{-1, -1}, {-1, 1}, {1, 1}, {1, -1}}, false);
+
+      self.assert_equal(p.size(), 4);
+      self.assert_false(p.is_closed());
     },
-    task("add_points2") = []{
-      polygon p1;
-      p1.add(point(-1.0, -1.0));
-      self.assert_equal(p1.get_point_count(), 1);
-      
-      point poi1(-1.0, 1.0);
-      p1.add(poi1);
-      self.assert_equal(p1.get_point_count(), 2);
-      p1.add({1.0, 1.0});
-      self.assert_equal(p1.get_point_count(), 3);
+    task("initializer list close") = []{
+      polygon p({{-1, -1}, {-1, 1}, {1, 1}, {1, -1}});
+
+      self.assert_equal(p.size(), 4);
+      self.assert_true(p.is_closed());
     }
   };
 
-  test("polygon properties") = {
-    task("is_closed") = []{
-      polygon p1;
-      p1.add(-1.0, -1.0);
-      p1.add(-1.0, 1.0);
-      p1.add(1.0, 1.0);
-      p1.add(1.0, -1.0);
+  test("push_back") = {
+    task("push_back double") = []{
+      polygon p;
+
+      p.push_back(-1, -1);
+      self.assert_equal(p.size(), 1);
+      p.push_back(-1, 1);
+      self.assert_equal(p.size(), 2);
+    },
+    task("push_back vertex") = []{
+      polygon p;
+
+      p.push_back(vertex{1, 1});
+      self.assert_equal(p.size(), 1);
       
-      self.assert_false(p1.is_closed());
-      p1.close();
-      self.assert_true(p1.is_closed());
-    },
-    task("area") = []{
-      polygon p1;
-      p1.add(-1.0, -1.0);
-      p1.add(-1.0, 1.0);
-      p1.add(1.0, 1.0);
-      p1.add(1.0, -1.0);
+      vertex v{1, -1};
+      p.push_back(v);
+      self.assert_equal(p.size(), 2);
+      p.push_back({0, -2});
+      self.assert_equal(p.size(), 3);
+    }
+  };
 
-      self.assert_almost_equal(p1.get_area(), 4.0);
+  test("close") = {
+    task("is_closed") = []{
+      polygon p;
+      self.assert_false(p.is_closed());
     },
-    task("perimeter square") = []{
-      polygon p1;
-      p1.add(-1.0, -1.0);
-      p1.add(-1.0, 1.0);
-      p1.add(1.0, 1.0);
-      p1.add(1.0, -1.0);
+    task("close") = []{
+      polygon p;
+      p.push_back({-1, -1});
+      p.push_back({-1, 1});
+      p.push_back({0, 0});
 
-      self.assert_almost_equal(p1.get_perimeter(), 8.0);
-    },
-    task("perimeter rectangle") = []{
-      polygon p1;
-      p1.add(-2.0, -1.0);
-      p1.add(-2.0, 1.0);
-      p1.add(2.0, 1.0);
-      p1.add(2.0, -1.0);
+      p.close();
+      self.assert_true(p.is_closed());
+    }
+  };
 
-      self.assert_almost_equal(p1.get_perimeter(), 12.0);
+  test("area") = {
+    task("area") = [=]{
+      self.assert_almost_equal(rectangle.area(), 8.0);
+      self.assert_almost_equal(square.area(), 4.0);
+      self.assert_almost_equal(hexagon.area(), 10.3923, 4.0);
+    }
+  };
+
+  test("perimeter") = {
+    task("perimeter") = [=]{
+      self.assert_almost_equal(rectangle.perimeter(), 12.0);
+      self.assert_almost_equal(square.perimeter(), 8.0);
+      self.assert_almost_equal(hexagon.perimeter(), 12.0);
     }
   };
 
